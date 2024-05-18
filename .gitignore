@@ -1,1 +1,12 @@
-node_modules
+# Ignore node_modules directory
+/node_modules
+/node_modules/.cache
+
+# Ignore npm-debug.log file
+npm-debug.log
+
+# Ignore yarn.lock file
+yarn.lock
+
+# Ignore .env file (if you have sensitive information)
+.env

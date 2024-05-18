@@ -7,13 +7,17 @@ const PasswordControlledInput = () => {
 
   return (
     <Box w="100%">
-      <Text mb='8px' textAlign="left">Password:</Text>
+      <Text mb="8px" textAlign="left">
+        Password:
+      </Text>
       <Input
         value={value}
         onChange={handleChange}
-        placeholder='Ingrese su contraseña'
-        size='md'
+        placeholder="Ingrese su contraseña"
+        size="md"
         type="password"
+        focusBorderColor="#6750A4"
+        errorBorderColor="red.500"
       />
     </Box>
   );

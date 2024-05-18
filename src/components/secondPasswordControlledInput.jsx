@@ -7,13 +7,16 @@ const SecondPasswordControlledInput = () => {
 
   return (
     <Box w="100%">
-      <Text mb='8px' textAlign="left">Repita la password:</Text>
+      <Text mb="8px" textAlign="left">
+        Repita la password:
+      </Text>
       <Input
         value={value}
         onChange={handleChange}
-        placeholder='Ingrese su contraseña'
-        size='md'
+        placeholder="Ingrese su contraseña"
+        size="md"
         type="password"
+        focusBorderColor="#6750A4"
       />
     </Box>
   );

@@ -7,12 +7,15 @@ const AreaControlledInput = () => {
 
   return (
     <Box w="100%">
-      <Text mb="8px" textAlign="left">Area:</Text>
+      <Text mb="8px" textAlign="left">
+        Area:
+      </Text>
       <Input
         value={value}
         onChange={handleChange}
         placeholder="Ingrese su area de trabajo"
         size="md"
+        focusBorderColor="#6750A4"
       />
     </Box>
   );

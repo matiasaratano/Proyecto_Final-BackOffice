@@ -17,11 +17,28 @@ const ContraseñaOlvidada = () => {
   };
 
   return (
-    <Box minH="100vh" p={10} bg="purple.100" display="flex" justifyContent="center" alignItems="center">
-      <Box p={8} maxW="lg" borderWidth={2} borderRadius="lg" boxShadow="xl" bg="white" w="full">
+    <Box
+      minH="100vh"
+      p={10}
+      bg="#E8DEF8"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Box
+        p={8}
+        maxW="lg"
+        borderWidth={2}
+        borderRadius="lg"
+        boxShadow="xl"
+        bg="white"
+        w="full"
+      >
         <VStack spacing={8} w="full" maxW="lg">
           <Text>
-            Por favor, introduce tu dirección de correo electrónico alternativo (o personal) a continuación para que podamos enviarte la información de inicio de sesión.
+            Por favor, introduce tu dirección de correo electrónico alternativo
+            (o personal) a continuación para que podamos enviarte la información
+            de inicio de sesión.
           </Text>
           <EmailControlledInput />
           <EnviarButton onClick={handleEnviarClick} />

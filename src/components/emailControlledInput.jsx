@@ -7,12 +7,16 @@ const EmailControlledInput = () => {
 
   return (
     <Box w="100%">
-      <Text mb='8px' textAlign="left">Email:</Text>
+      <Text mb="8px" textAlign="left">
+        Email:
+      </Text>
       <Input
         value={value}
         onChange={handleChange}
-        placeholder='Ingrese su email'
-        size='md'
+        placeholder="Ingrese su email"
+        size="md"
+        focusBorderColor="#6750A4"
+        errorBorderColor="red.500"
       />
     </Box>
   );

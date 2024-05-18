@@ -7,12 +7,15 @@ const NombreCompletoControlledInput = () => {
 
   return (
     <Box w="100%">
-      <Text mb="8px" textAlign="left">Nombre Completo:</Text>
+      <Text mb="8px" textAlign="left">
+        Nombre Completo:
+      </Text>
       <Input
         value={value}
         onChange={handleChange}
         placeholder="Ingrese su nombre completo"
         size="md"
+        focusBorderColor="#6750A4"
       />
     </Box>
   );

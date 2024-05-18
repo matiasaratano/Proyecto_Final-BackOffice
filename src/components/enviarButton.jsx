@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@chakra-ui/react';
 
 const EnviarButton = ({ onClick }) => (
-  <Button colorScheme="purple" w="100%" onClick={onClick}>
+  <Button bg="#6750A4" w="100%" onClick={onClick} color={'white'}>
     Enviar
   </Button>
 );
