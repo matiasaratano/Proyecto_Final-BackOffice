@@ -7,8 +7,8 @@ const PasswordControlledInput = () => {
 
   return (
     <Box w="100%">
-      <Text mb="8px" textAlign="left">
-        Password:
+      <Text mb="8px" textAlign="left" color={'#6a4fa7'} fontWeight={'bold'}>
+        Constraseña
       </Text>
       <Input
         value={value}

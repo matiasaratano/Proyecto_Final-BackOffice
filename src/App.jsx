@@ -6,6 +6,8 @@ import Home from './screens/Home';
 import RegistrarUsuario from './screens/RegistrarUsuario';
 import ContraseñaOlvidada from './screens/ContraseñaOlvidada';
 import EmailRecuperacionEnviado from './screens/EmailRecuperacionEnviado';
+import AltaEmpleado from './screens/AltaEmpleado';
+import ModificarEmpleado from './screens/ModificarEmpleados';
 
 function App() {
   return (
@@ -17,8 +19,16 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/home" element={<Home />} />
             <Route path="/registrar-usuario" element={<RegistrarUsuario />} />
-            <Route path="/contraseña-olvidada" element={<ContraseñaOlvidada />} />
-            <Route path="/email-recuperacion" element={<EmailRecuperacionEnviado />} />
+            <Route
+              path="/contraseña-olvidada"
+              element={<ContraseñaOlvidada />}
+            />
+            <Route
+              path="/email-recuperacion"
+              element={<EmailRecuperacionEnviado />}
+            />
+            <Route path="/alta-empleado" element={<AltaEmpleado />} />
+            <Route path="/modificar-empleado" element={<ModificarEmpleado />} />
             <Route exact path="/" element={<Login />} />
           </Routes>
         </div>

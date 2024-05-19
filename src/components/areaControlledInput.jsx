@@ -7,7 +7,7 @@ const AreaControlledInput = () => {
 
   return (
     <Box w="100%">
-      <Text mb="8px" textAlign="left">
+      <Text mb="8px" textAlign="left" color={'#6a4fa7'} fontWeight={'bold'}>
         Area:
       </Text>
       <Input
