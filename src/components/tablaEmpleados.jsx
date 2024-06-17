@@ -9,6 +9,7 @@ import {
   TableContainer,
   Button,
   Input,
+  Flex,
 } from '@chakra-ui/react';
 
 const initialEmployees = [
@@ -45,33 +46,33 @@ const EmployeeTable = () => {
 
   return (
     <TableContainer>
-      <Table variant="simple">
+      <Table variant="simple" marginTop={10} bg="whiteAlpha.500">
         <Thead>
           <Tr>
-            <Th>Nombre Completo</Th>
-            <Th>Email</Th>
-            <Th>Password</Th>
-            <Th>Acciones</Th>
+            <Th textAlign="left">Nombre Completo</Th>
+            <Th textAlign="left">Email</Th>
+            <Th textAlign="left">Password</Th>
+            <Th textAlign="center">Acciones</Th>
           </Tr>
         </Thead>
         <Tbody>
           {employees.map((employee) => (
             <Tr key={employee.id}>
-              <Td>
+              <Td textAlign="right">
                 <Input
                   value={employee.name}
                   isDisabled={editingId !== employee.id}
                   onChange={(e) => handleChange(e, employee.id, 'name')}
                 />
               </Td>
-              <Td>
+              <Td textAlign="right">
                 <Input
                   value={employee.email}
                   isDisabled={editingId !== employee.id}
                   onChange={(e) => handleChange(e, employee.id, 'email')}
                 />
               </Td>
-              <Td>
+              <Td textAlign="right">
                 <Input
                   value={employee.password}
                   type="password"
@@ -79,27 +80,29 @@ const EmployeeTable = () => {
                   onChange={(e) => handleChange(e, employee.id, 'password')}
                 />
               </Td>
-              <Td>
-                {editingId === employee.id ? (
-                  <Button colorScheme="blue" onClick={handleSave}>
-                    Guardar
-                  </Button>
-                ) : (
+              <Td textAlign="right">
+                <Flex justifyContent="flex-end">
+                  {editingId === employee.id ? (
+                    <Button colorScheme="blue" onClick={handleSave}>
+                      Guardar
+                    </Button>
+                  ) : (
+                    <Button
+                      bg="#6a4fa7"
+                      color={'white'}
+                      onClick={() => handleEdit(employee.id)}
+                    >
+                      Modificar
+                    </Button>
+                  )}
                   <Button
-                    bg="#6a4fa7"
-                    color={'white'}
-                    onClick={() => handleEdit(employee.id)}
+                    colorScheme="red"
+                    onClick={() => handleDelete(employee.id)}
+                    ml={6}
                   >
-                    Modificar
+                    Eliminar
                   </Button>
-                )}
-                <Button
-                  colorScheme="red"
-                  onClick={() => handleDelete(employee.id)}
-                  ml={2}
-                >
-                  Eliminar
-                </Button>
+                </Flex>
               </Td>
             </Tr>
           ))}
