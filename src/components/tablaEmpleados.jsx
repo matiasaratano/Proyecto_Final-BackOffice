@@ -32,6 +32,7 @@ const EmployeeTable = () => {
   const [employees, setEmployees] = useState(initialEmployees);
   const [editingId, setEditingId] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
   const handleEdit = (id) => {
     setEditingId(id);
@@ -39,13 +40,15 @@ const EmployeeTable = () => {
 
   //ver en este metodo como pasar el id a confirmDelete, no le esta llegando y no lo elimina de la lista hardcodeada
   const handleDelete = (id) => {
+    setEmployeeToDelete(id);
     onOpen();
   };
 
-  const confirmDelete = (id) => {
-    // Aca se implementaría la lógica real para eliminar el empleado
-    setEmployees(employees.filter((employee) => employee.id !== id));
-    console.log(`Eliminando empleado con id ${editingId}`);
+  const confirmDelete = () => {
+    setEmployees(
+      employees.filter((employee) => employee.id !== employeeToDelete)
+    );
+    console.log(`Eliminando empleado con id ${employeeToDelete}`);
     onClose();
   };
 

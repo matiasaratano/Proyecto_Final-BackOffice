@@ -9,6 +9,7 @@ import EmailRecuperacionEnviado from './screens/EmailRecuperacionEnviado';
 import AltaEmpleado from './screens/AltaEmpleado';
 import ModificarEmpleado from './screens/ModificarEmpleados';
 import Reservas from './screens/Reservas';
+import Reportes from './screens/Reportes';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="/modificar-empleado" element={<ModificarEmpleado />} />
             <Route exact path="/" element={<Login />} />
             <Route path="/reservas" element={<Reservas />} />
+            <Route path="/reportes" element={<Reportes />} />
           </Routes>
         </div>
       </Router>

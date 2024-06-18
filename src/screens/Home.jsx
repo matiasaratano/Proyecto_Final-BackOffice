@@ -31,7 +31,7 @@ const Home = () => {
   return (
     <Box
       minH="100vh"
-      bgImage="url('https://img.freepik.com/foto-gratis/resumen-antecedentes-cemento-pared-sombra-concepto-luz_53876-147612.jpg?t=st=1718482244~exp=1718485844~hmac=a7b0444ce3a97e3d3fb402c2ddb3317ff4a501872e48362275f2a014704611fa&w=1380')"
+      bgImage="url('https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"
       bgSize="cover"
       bgPosition="center"
       position="relative"
@@ -46,7 +46,7 @@ const Home = () => {
           <Box
             p={6}
             borderRadius="lg"
-            opacity={0.8}
+            opacity={0.9}
             transition="opacity 0.3s ease, transform 0.3s ease"
             _hover={{
               opacity: 1,
@@ -58,7 +58,7 @@ const Home = () => {
           <Box
             p={6}
             borderRadius="lg"
-            opacity={0.8}
+            opacity={0.9}
             transition="opacity 0.3s ease, transform 0.3s ease"
             _hover={{
               opacity: 1,
@@ -70,7 +70,7 @@ const Home = () => {
           <Box
             p={6}
             borderRadius="lg"
-            opacity={0.8}
+            opacity={0.9}
             transition="opacity 0.3s ease, transform 0.3s ease"
             _hover={{
               opacity: 1,
