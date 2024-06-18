@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { Box, SimpleGrid, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Image } from '@chakra-ui/react';
+import {
+  Box,
+  SimpleGrid,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from '@chakra-ui/react';
 import EmpleadosCard from '../components/empleadosCard';
 import ReservasCard from '../components/reservasCard';
 import ReportesCard from '../components/reportesCard';
-import Header from '../components/header'; 
-import logo from '../assets/logobdt.png';
-import CerrarSesion from '../components/logoutButton'; 
+import Header from '../components/header';
+import CerrarSesion from '../components/logoutButton';
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,10 +34,9 @@ const Home = () => {
       bgImage="url('https://img.freepik.com/foto-gratis/resumen-antecedentes-cemento-pared-sombra-concepto-luz_53876-147612.jpg?t=st=1718482244~exp=1718485844~hmac=a7b0444ce3a97e3d3fb402c2ddb3317ff4a501872e48362275f2a014704611fa&w=1380')"
       bgSize="cover"
       bgPosition="center"
-      position="relative" 
+      position="relative"
     >
-
-      <Header /> 
+      <Header />
       <Box p={10}>
         <SimpleGrid
           columns={{ base: 1, md: 1, lg: 3 }}
@@ -37,11 +46,11 @@ const Home = () => {
           <Box
             p={6}
             borderRadius="lg"
-            opacity={0.8} 
+            opacity={0.8}
             transition="opacity 0.3s ease, transform 0.3s ease"
-            _hover={{ 
+            _hover={{
               opacity: 1,
-              transform: 'scale(1.05)'
+              transform: 'scale(1.05)',
             }}
           >
             <EmpleadosCard />
@@ -51,9 +60,9 @@ const Home = () => {
             borderRadius="lg"
             opacity={0.8}
             transition="opacity 0.3s ease, transform 0.3s ease"
-            _hover={{ 
+            _hover={{
               opacity: 1,
-              transform: 'scale(1.05)'
+              transform: 'scale(1.05)',
             }}
           >
             <ReservasCard />
@@ -63,9 +72,9 @@ const Home = () => {
             borderRadius="lg"
             opacity={0.8}
             transition="opacity 0.3s ease, transform 0.3s ease"
-            _hover={{ 
+            _hover={{
               opacity: 1,
-              transform: 'scale(1.05)'
+              transform: 'scale(1.05)',
             }}
           >
             <ReportesCard />
