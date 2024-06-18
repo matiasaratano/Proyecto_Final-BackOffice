@@ -11,6 +11,16 @@ import {
   Input,
   Flex,
 } from '@chakra-ui/react';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react';
 
 const initialEmployees = [
   { id: 1, name: 'John Doe', email: 'john@example.com', password: '123456' },
@@ -21,13 +31,22 @@ const initialEmployees = [
 const EmployeeTable = () => {
   const [employees, setEmployees] = useState(initialEmployees);
   const [editingId, setEditingId] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleEdit = (id) => {
     setEditingId(id);
   };
 
+  //ver en este metodo como pasar el id a confirmDelete, no le esta llegando y no lo elimina de la lista hardcodeada
   const handleDelete = (id) => {
+    onOpen();
+  };
+
+  const confirmDelete = (id) => {
+    // Aca se implementaría la lógica real para eliminar el empleado
     setEmployees(employees.filter((employee) => employee.id !== id));
+    console.log(`Eliminando empleado con id ${editingId}`);
+    onClose();
   };
 
   const handleChange = (e, id, field) => {
@@ -107,6 +126,25 @@ const EmployeeTable = () => {
             </Tr>
           ))}
         </Tbody>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Confirmación</ModalHeader>
+            <ModalBody>
+              <Text>
+                ¿Estás seguro/a de que quieres eliminar este empleado?
+              </Text>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="ghost" onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button colorScheme="red" onClick={confirmDelete}>
+                Aceptar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Table>
     </TableContainer>
   );
