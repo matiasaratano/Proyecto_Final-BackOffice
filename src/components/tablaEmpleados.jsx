@@ -9,6 +9,17 @@ import {
   TableContainer,
   Button,
   Input,
+  Flex,
+} from '@chakra-ui/react';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 
 const initialEmployees = [
@@ -20,13 +31,25 @@ const initialEmployees = [
 const EmployeeTable = () => {
   const [employees, setEmployees] = useState(initialEmployees);
   const [editingId, setEditingId] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
   const handleEdit = (id) => {
     setEditingId(id);
   };
 
+  //ver en este metodo como pasar el id a confirmDelete, no le esta llegando y no lo elimina de la lista hardcodeada
   const handleDelete = (id) => {
-    setEmployees(employees.filter((employee) => employee.id !== id));
+    setEmployeeToDelete(id);
+    onOpen();
+  };
+
+  const confirmDelete = () => {
+    setEmployees(
+      employees.filter((employee) => employee.id !== employeeToDelete)
+    );
+    console.log(`Eliminando empleado con id ${employeeToDelete}`);
+    onClose();
   };
 
   const handleChange = (e, id, field) => {
@@ -45,33 +68,33 @@ const EmployeeTable = () => {
 
   return (
     <TableContainer>
-      <Table variant="simple">
+      <Table variant="simple" marginTop={10} bg="whiteAlpha.500">
         <Thead>
           <Tr>
-            <Th>Nombre Completo</Th>
-            <Th>Email</Th>
-            <Th>Password</Th>
-            <Th>Acciones</Th>
+            <Th textAlign="left">Nombre Completo</Th>
+            <Th textAlign="left">Email</Th>
+            <Th textAlign="left">Password</Th>
+            <Th textAlign="center">Acciones</Th>
           </Tr>
         </Thead>
         <Tbody>
           {employees.map((employee) => (
             <Tr key={employee.id}>
-              <Td>
+              <Td textAlign="right">
                 <Input
                   value={employee.name}
                   isDisabled={editingId !== employee.id}
                   onChange={(e) => handleChange(e, employee.id, 'name')}
                 />
               </Td>
-              <Td>
+              <Td textAlign="right">
                 <Input
                   value={employee.email}
                   isDisabled={editingId !== employee.id}
                   onChange={(e) => handleChange(e, employee.id, 'email')}
                 />
               </Td>
-              <Td>
+              <Td textAlign="right">
                 <Input
                   value={employee.password}
                   type="password"
@@ -79,31 +102,52 @@ const EmployeeTable = () => {
                   onChange={(e) => handleChange(e, employee.id, 'password')}
                 />
               </Td>
-              <Td>
-                {editingId === employee.id ? (
-                  <Button colorScheme="blue" onClick={handleSave}>
-                    Guardar
-                  </Button>
-                ) : (
+              <Td textAlign="right">
+                <Flex justifyContent="flex-end">
+                  {editingId === employee.id ? (
+                    <Button colorScheme="blue" onClick={handleSave}>
+                      Guardar
+                    </Button>
+                  ) : (
+                    <Button
+                      bg="#6a4fa7"
+                      color={'white'}
+                      onClick={() => handleEdit(employee.id)}
+                    >
+                      Modificar
+                    </Button>
+                  )}
                   <Button
-                    bg="#6a4fa7"
-                    color={'white'}
-                    onClick={() => handleEdit(employee.id)}
+                    colorScheme="red"
+                    onClick={() => handleDelete(employee.id)}
+                    ml={6}
                   >
-                    Modificar
+                    Eliminar
                   </Button>
-                )}
-                <Button
-                  colorScheme="red"
-                  onClick={() => handleDelete(employee.id)}
-                  ml={2}
-                >
-                  Eliminar
-                </Button>
+                </Flex>
               </Td>
             </Tr>
           ))}
         </Tbody>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Confirmación</ModalHeader>
+            <ModalBody>
+              <Text>
+                ¿Estás seguro/a de que quieres eliminar este empleado?
+              </Text>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="ghost" onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button colorScheme="red" onClick={confirmDelete}>
+                Aceptar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Table>
     </TableContainer>
   );

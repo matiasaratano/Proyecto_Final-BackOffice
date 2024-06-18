@@ -1,12 +1,16 @@
 import React from 'react';
 import {
   Card,
-  CardHeader,
   CardBody,
+  CardHeader,
   CardFooter,
   Heading,
   Text,
   Button,
+  Stack,
+  Divider,
+  ButtonGroup,
+  Image
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,37 +26,31 @@ const EmpleadosCard = () => {
   };
 
   return (
-    <Card
-      align="center"
-      p={4}
-      maxW="md"
-      borderWidth={2}
-      borderRadius="lg"
-      overflow="hidden"
-      boxShadow="lg"
-      mx="auto"
-    >
-      <CardHeader>
-        <Heading size="md">Empleados</Heading>
-      </CardHeader>
+    <Card maxW='sm' borderWidth={2} borderRadius='lg' overflow='hidden' boxShadow='lg' mx='auto'>
+      <Image
+        src='https://images.unsplash.com/photo-1538688423619-a81d3f23454b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        alt='Empleados'
+        borderRadius='lg'
+      />
       <CardBody>
-        <Text>
-          Visualizar la información de todos los empleados actuales de BDT
-          Global Argentina o dar de alta uno nuevo.
-        </Text>
+        <Stack mt='6' spacing='3'>
+          <Heading size='md'>Empleados</Heading>
+          <Text>
+            Visualizar la información de los empleados actuales de BDT
+            Global o dar de alta uno nuevo.
+          </Text>
+        </Stack>
       </CardBody>
+      <Divider />
       <CardFooter>
-        <Button
-          bg="#E8DEF8"
-          color={'black'}
-          marginRight={5}
-          onClick={handleButtonModificar}
-        >
-          Ver-Modificar
-        </Button>
-        <Button bg="#6750A4" color={'white'} onClick={handleButtonAlta}>
-          Alta Usuario
-        </Button>
+        <ButtonGroup spacing='2'>
+          <Button variant='solid' colorScheme='purple' onClick={handleButtonModificar}>
+            Ver/Modificar
+          </Button>
+          <Button variant='solid' colorScheme='teal' onClick={handleButtonAlta}>
+            Alta Usuario
+          </Button>
+        </ButtonGroup>
       </CardFooter>
     </Card>
   );
