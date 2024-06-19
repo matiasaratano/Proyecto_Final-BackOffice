@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   Thead,
@@ -29,7 +29,7 @@ const initialEmployees = [
 ];
 
 const EmployeeTable = () => {
-  const [employees, setEmployees] = useState(initialEmployees);
+  const [employees, setEmployees] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
@@ -38,15 +38,30 @@ const EmployeeTable = () => {
     setEditingId(id);
   };
 
-  //ver en este metodo como pasar el id a confirmDelete, no le esta llegando y no lo elimina de la lista hardcodeada
   const handleDelete = (id) => {
-    setEmployeeToDelete(id);
-    onOpen();
-  };
+    fetch(`http://172.20.97.65:8080/api/user/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then((response) => {
+        if (response.ok) {
+            // Eliminar el empleado de la lista local
+            setEmployees(employees.filter((employee) => employee.userId !== id));
+            console.log(`Empleado con id ${id} eliminado`);
+        } else {
+            console.error('Error al eliminar empleado');
+        }
+    })
+    .catch((error) => {
+        console.error('Error al eliminar empleado:', error);
+    });
+};
 
   const confirmDelete = () => {
     setEmployees(
-      employees.filter((employee) => employee.id !== employeeToDelete)
+      employees.filter((employee) => employee.userId !== employeeToDelete)
     );
     console.log(`Eliminando empleado con id ${employeeToDelete}`);
     onClose();
@@ -54,7 +69,7 @@ const EmployeeTable = () => {
 
   const handleChange = (e, id, field) => {
     const newEmployees = employees.map((employee) => {
-      if (employee.id === id) {
+      if (employee.userId === id) {
         return { ...employee, [field]: e.target.value };
       }
       return employee;
@@ -63,8 +78,34 @@ const EmployeeTable = () => {
   };
 
   const handleSave = () => {
-    setEditingId(null);
+    const employee = employees.find(emp => emp.userId === editingId);
+    fetch(`http://172.20.97.65:8080/api/user/${editingId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(employee),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+        setEditingId(null);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
+
+  useEffect(() => {
+    fetch('http://172.20.97.65:8080/api/user')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success && data.data && data.data.success && data.data.data) {
+          setEmployees(data.data.data);
+        }
+      })
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
 
   return (
     <TableContainer>
@@ -79,32 +120,32 @@ const EmployeeTable = () => {
         </Thead>
         <Tbody>
           {employees.map((employee) => (
-            <Tr key={employee.id}>
+            <Tr key={employee.userId}>
               <Td textAlign="right">
                 <Input
-                  value={employee.name}
-                  isDisabled={editingId !== employee.id}
-                  onChange={(e) => handleChange(e, employee.id, 'name')}
+                  value={employee.fullName}
+                  isDisabled={editingId !== employee.userId}
+                  onChange={(e) => handleChange(e, employee.userId, 'fullName')}
                 />
               </Td>
               <Td textAlign="right">
                 <Input
                   value={employee.email}
-                  isDisabled={editingId !== employee.id}
-                  onChange={(e) => handleChange(e, employee.id, 'email')}
+                  isDisabled={editingId !== employee.userId}
+                  onChange={(e) => handleChange(e, employee.userId, 'email')}
                 />
               </Td>
               <Td textAlign="right">
                 <Input
-                  value={employee.password}
+                  value={employee.userPassword}
                   type="password"
-                  isDisabled={editingId !== employee.id}
-                  onChange={(e) => handleChange(e, employee.id, 'password')}
+                  isDisabled={editingId !== employee.userId}
+                  onChange={(e) => handleChange(e, employee.userId, 'userPassword')}
                 />
               </Td>
               <Td textAlign="right">
                 <Flex justifyContent="flex-end">
-                  {editingId === employee.id ? (
+                  {editingId === employee.userId ? (
                     <Button colorScheme="blue" onClick={handleSave}>
                       Guardar
                     </Button>
@@ -112,14 +153,14 @@ const EmployeeTable = () => {
                     <Button
                       bg="#6a4fa7"
                       color={'white'}
-                      onClick={() => handleEdit(employee.id)}
+                      onClick={() => handleEdit(employee.userId)}
                     >
                       Modificar
                     </Button>
                   )}
                   <Button
                     colorScheme="red"
-                    onClick={() => handleDelete(employee.id)}
+                    onClick={() => handleDelete(employee.userId)}
                     ml={6}
                   >
                     Eliminar
