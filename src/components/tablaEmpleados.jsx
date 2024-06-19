@@ -10,6 +10,8 @@ import {
   Button,
   Input,
   Flex,
+  FormControl,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -22,48 +24,62 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 
-const initialEmployees = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', password: '123456' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', password: 'abcdef' },
-  // Añade más empleados según sea necesario
-];
-
 const EmployeeTable = () => {
   const [employees, setEmployees] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isSaveOpen,
+    onOpen: onSaveOpen,
+    onClose: onSaveClose,
+  } = useDisclosure();
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [employeeToSave, setEmployeeToSave] = useState(null);
 
   const handleEdit = (id) => {
     setEditingId(id);
   };
 
+  const validateFields = (employee) => {
+    const newErrors = {};
+    if (!employee.fullName)
+      newErrors.fullName = 'El campo no puede estar vacío';
+    if (!employee.email) {
+      newErrors.email = 'El campo no puede estar vacío';
+    } else if (!/\S+@\S+\.\S+/.test(employee.email)) {
+      newErrors.email = 'El email no es válido';
+    }
+    if (!employee.userPassword)
+      newErrors.userPassword = 'El campo no puede estar vacío';
+    return newErrors;
+  };
+
   const handleDelete = (id) => {
-    fetch(`http://172.20.97.65:8080/api/user/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+    fetch(`http://localhost:8080/api/user/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
-    .then((response) => {
+      .then((response) => {
         if (response.ok) {
-            // Eliminar el empleado de la lista local
-            setEmployees(employees.filter((employee) => employee.userId !== id));
-            console.log(`Empleado con id ${id} eliminado`);
+          setEmployees(employees.filter((employee) => employee.userId !== id));
+          console.log(`Empleado con id ${id} eliminado`);
         } else {
-            console.error('Error al eliminar empleado');
+          console.error('Error al eliminar empleado');
         }
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         console.error('Error al eliminar empleado:', error);
-    });
-};
+      });
+  };
 
   const confirmDelete = () => {
-    setEmployees(
-      employees.filter((employee) => employee.userId !== employeeToDelete)
-    );
-    console.log(`Eliminando empleado con id ${employeeToDelete}`);
+    if (employeeToDelete) {
+      handleDelete(employeeToDelete);
+      setEmployeeToDelete(null);
+    }
     onClose();
   };
 
@@ -77,27 +93,40 @@ const EmployeeTable = () => {
     setEmployees(newEmployees);
   };
 
-  const handleSave = () => {
-    const employee = employees.find(emp => emp.userId === editingId);
-    fetch(`http://172.20.97.65:8080/api/user/${editingId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(employee),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Success:', data);
-        setEditingId(null);
+  const handleSaveClick = (employee) => {
+    const newErrors = validateFields(employee);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+    } else {
+      setEmployeeToSave(employee);
+      onSaveOpen();
+    }
+  };
+
+  const confirmSave = () => {
+    if (employeeToSave) {
+      fetch(`http://localhost:8080/api/user/${editingId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeeToSave),
       })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success:', data);
+          setEditingId(null);
+          setEmployeeToSave(null);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+    onSaveClose();
   };
 
   useEffect(() => {
-    fetch('http://172.20.97.65:8080/api/user')
+    fetch('http://localhost:8080/api/user')
       .then((response) => response.json())
       .then((data) => {
         if (data.success && data.data && data.data.success && data.data.data) {
@@ -106,6 +135,11 @@ const EmployeeTable = () => {
       })
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
+
+  const openDeleteModal = (id) => {
+    setEmployeeToDelete(id);
+    onOpen();
+  };
 
   return (
     <TableContainer>
@@ -122,31 +156,61 @@ const EmployeeTable = () => {
           {employees.map((employee) => (
             <Tr key={employee.userId}>
               <Td textAlign="right">
-                <Input
-                  value={employee.fullName}
-                  isDisabled={editingId !== employee.userId}
-                  onChange={(e) => handleChange(e, employee.userId, 'fullName')}
-                />
+                <FormControl
+                  isInvalid={errors.fullName && editingId === employee.userId}
+                >
+                  <Input
+                    value={employee.fullName}
+                    isDisabled={editingId !== employee.userId}
+                    onChange={(e) =>
+                      handleChange(e, employee.userId, 'fullName')
+                    }
+                  />
+                  {errors.fullName && editingId === employee.userId && (
+                    <FormErrorMessage>{errors.fullName}</FormErrorMessage>
+                  )}
+                </FormControl>
               </Td>
               <Td textAlign="right">
-                <Input
-                  value={employee.email}
-                  isDisabled={editingId !== employee.userId}
-                  onChange={(e) => handleChange(e, employee.userId, 'email')}
-                />
+                <FormControl
+                  isInvalid={errors.email && editingId === employee.userId}
+                >
+                  <Input
+                    value={employee.email}
+                    isDisabled={editingId !== employee.userId}
+                    onChange={(e) => handleChange(e, employee.userId, 'email')}
+                  />
+                  {errors.email && editingId === employee.userId && (
+                    <FormErrorMessage>{errors.email}</FormErrorMessage>
+                  )}
+                </FormControl>
               </Td>
               <Td textAlign="right">
-                <Input
-                  value={employee.userPassword}
-                  type="password"
-                  isDisabled={editingId !== employee.userId}
-                  onChange={(e) => handleChange(e, employee.userId, 'userPassword')}
-                />
+                <FormControl
+                  isInvalid={
+                    errors.userPassword && editingId === employee.userId
+                  }
+                >
+                  <Input
+                    value={employee.userPassword}
+                    type="password"
+                    isDisabled={editingId !== employee.userId}
+                    onChange={(e) =>
+                      handleChange(e, employee.userId, 'userPassword')
+                    }
+                  />
+                  {errors.userPassword && editingId === employee.userId && (
+                    <FormErrorMessage>{errors.userPassword}</FormErrorMessage>
+                  )}
+                </FormControl>
               </Td>
               <Td textAlign="right">
                 <Flex justifyContent="flex-end">
                   {editingId === employee.userId ? (
-                    <Button colorScheme="blue" onClick={handleSave}>
+                    <Button
+                      colorScheme="blue"
+                      onClick={() => handleSaveClick(employee)}
+                    >
                       Guardar
                     </Button>
                   ) : (
@@ -160,7 +224,7 @@ const EmployeeTable = () => {
                   )}
                   <Button
                     colorScheme="red"
-                    onClick={() => handleDelete(employee.userId)}
+                    onClick={() => openDeleteModal(employee.userId)}
                     ml={6}
                   >
                     Eliminar
@@ -170,26 +234,41 @@ const EmployeeTable = () => {
             </Tr>
           ))}
         </Tbody>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Confirmación</ModalHeader>
-            <ModalBody>
-              <Text>
-                ¿Estás seguro/a de que quieres eliminar este empleado?
-              </Text>
-            </ModalBody>
-            <ModalFooter>
-              <Button variant="ghost" onClick={onClose}>
-                Cancelar
-              </Button>
-              <Button colorScheme="red" onClick={confirmDelete}>
-                Aceptar
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </Table>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirmación</ModalHeader>
+          <ModalBody>
+            <Text>¿Estás seguro/a de que quieres eliminar este empleado?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+              Aceptar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isSaveOpen} onClose={onSaveClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirmación de Guardado</ModalHeader>
+          <ModalBody>
+            <Text>¿Estás seguro/a de que quieres guardar los cambios?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" onClick={onSaveClose}>
+              Cancelar
+            </Button>
+            <Button colorScheme="blue" onClick={confirmSave} ml={3}>
+              Aceptar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </TableContainer>
   );
 };
