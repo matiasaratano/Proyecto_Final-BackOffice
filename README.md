@@ -26,25 +26,25 @@ Estas instrucciones son para desarrolladores que deseen clonar y ejecutar el pro
 
 ### Clonación del Repositorio
 
-git clone https://github.com/tu-usuario/gestion-de-presencialidad-backoffice.git
-cd gestion-de-presencialidad-backoffice
+- git clone https://github.com/matiasaratano/Proyecto_Final-BackOffice.git
+- cd Proyecto_Final-BackOffice
 
 ### Instalación de Dependencias
 
-Usando npm: npm install
-O usando yarn: yarn install
+- Usando npm: npm install
+- O usando yarn: yarn install
 
 ### Ejecución del Proyecto en Desarrollo
 
-Usando npm: npm npm start
-O usando yarn: yarn start
+- Usando npm: npm npm start
+- O usando yarn: yarn start
 
 El proyecto se ejecutará en http://localhost:3000.
 
 ### Compilación para Producción
 
-Usando npm: npm run build
-O usando yarn: yarn build
+- Usando npm: npm run build
+- O usando yarn: yarn build
 
 Esto creará una versión optimizada del proyecto en la carpeta build.
 
@@ -56,14 +56,14 @@ Los usuarios finales pueden acceder al backoffice a través de su navegador pref
 
 Una breve descripción de la estructura de carpetas y archivos principales:
 
-├── public/ # Archivos públicos
-├── src/ # Código fuente del proyecto
-│ ├── components/ # Componentes de React
-│ ├── screen/ # Páginas del backoffice
-│ └── App.js # Componente principal
-├── .gitignore # Archivos y carpetas ignorados por Git
-├── package.json # Dependencias y scripts del proyecto
-├── README.md # Este archivo
+- public/ # Archivos públicos
+- src/ # Código fuente del proyecto
+- components/ # Componentes de React
+- screen/ # Páginas del backoffice
+- App.js # Componente principal
+- .gitignore # Archivos y carpetas ignorados por Git
+- package.json # Dependencias y scripts del proyecto
+- README.md # Este archivo
 
 ## Créditos
 
