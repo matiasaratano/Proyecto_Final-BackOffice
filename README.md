@@ -1,70 +1,78 @@
-# Getting Started with Create React App
+# Gestión de Presencialidad - Backoffice
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Descripción General
 
-## Available Scripts
+El backoffice para el proyecto Gestión de Presencialidad permite la gestión de usuarios, reservas, viandas y reportes de la aplicación móvil desarrollada para BDT Global. La aplicación móvil facilita la gestión de asientos y la presencialidad en la empresa.
 
-In the project directory, you can run:
+## Características Principales
 
-### `npm start`
+- Gestión de usuarios.
+- Gestión de reservas.
+- Acceso al documento de viandas.
+- Generación de reportes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Requisitos del Sistema
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Para desarrollar y ejecutar el proyecto localmente, se requieren las siguientes herramientas:
 
-### `npm test`
+- Node.js
+- npm o yarn (gestores de paquetes)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Para los usuarios finales, el backoffice es accesible a través de cualquier navegador moderno.
 
-### `npm run build`
+## Instalación y Configuración
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Estas instrucciones son para desarrolladores que deseen clonar y ejecutar el proyecto localmente.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Clonación del Repositorio
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+git clone https://github.com/tu-usuario/gestion-de-presencialidad-backoffice.git
+cd gestion-de-presencialidad-backoffice
 
-### `npm run eject`
+### Instalación de Dependencias
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Usando npm: npm install
+O usando yarn: yarn install
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Ejecución del Proyecto en Desarrollo
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Usando npm: npm npm start
+O usando yarn: yarn start
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+El proyecto se ejecutará en http://localhost:3000.
 
-## Learn More
+### Compilación para Producción
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Usando npm: npm run build
+O usando yarn: yarn build
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Esto creará una versión optimizada del proyecto en la carpeta build.
 
-### Code Splitting
+## Uso del Backoffice
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Los usuarios finales pueden acceder al backoffice a través de su navegador preferido utilizando la URL proporcionada por el administrador del sistema.
 
-### Analyzing the Bundle Size
+## Estructura del Proyecto
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Una breve descripción de la estructura de carpetas y archivos principales:
 
-### Making a Progressive Web App
+├── public/ # Archivos públicos
+├── src/ # Código fuente del proyecto
+│ ├── components/ # Componentes de React
+│ ├── screen/ # Páginas del backoffice
+│ └── App.js # Componente principal
+├── .gitignore # Archivos y carpetas ignorados por Git
+├── package.json # Dependencias y scripts del proyecto
+├── README.md # Este archivo
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Créditos
 
-### Advanced Configuration
+Proyecto desarrollado por:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Kevin Mercs
+- Fernandez Nicolas
+- Venuti Ezequiel
+- Sosa Juan
+- Aratano Matias
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Agradecimientos especiales a nuestros profesores de Ort, Velurtas Jorge y Rivas Martin y BDT Global por su apoyo y colaboración.
