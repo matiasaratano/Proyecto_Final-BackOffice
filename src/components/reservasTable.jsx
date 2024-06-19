@@ -1,16 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Text, useDisclosure } from '@chakra-ui/react';
 
 
-const reservations = [
-  { id: 1, fecha: '15/06/24', empleado: { nombre: 'Juan Pérez', email: 'juan@example.com' }, acciones: 'Eliminar' },
-  { id: 2, fecha: '16/06/24', empleado: { nombre: 'María García', email: 'maria@example.com' }, acciones: 'Eliminar' },
-  { id: 3, fecha: '18/06/24', empleado: { nombre: 'Kevin Martinez', email: 'kevin@example.com' }, acciones: 'Eliminar' },
-  { id: 4, fecha: '19/06/24', empleado: { nombre: 'Nicolas Lopez', email: 'nicolas@example.com' }, acciones: 'Eliminar' },
-  // Reservas de ejemplo para probar funcionalidad logica
-];
-
 const ReservationTable = () => {
+  const [reservations, setReservations] = useState([])
   const [selectedReservation, setSelectedReservation] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -18,11 +11,38 @@ const ReservationTable = () => {
     setSelectedReservation(reservation);
     onOpen();
   };
+  
+  useEffect(() => {
+    fetch('http://172.20.97.65:8080/api/reserva/all')
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message)
+        setReservations(data.message)
+      })
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
 
   const confirmDelete = () => {
-    // Aca se implementaría la lógica real para eliminar la reserva
-    console.log(`Eliminando reserva con id ${selectedReservation.id}`);
-    onClose();
+    if (selectedReservation) {
+      fetch(`http://172.20.97.65:8080/api/reserva/${selectedReservation.id}`, {
+        method: 'DELETE'
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log(`Reserva con ID ${selectedReservation.id} eliminada correctamente`);
+            // Actualizar la lista de reservas excluyendo la reserva eliminada
+            setReservations(prevReservations => prevReservations.filter(reserva => reserva.id !== selectedReservation.id));
+          } else {
+            console.error('Error al intentar eliminar la reserva:', response.statusText);
+          }
+        })
+        .catch(error => {
+          console.error('Error al intentar eliminar la reserva:', error);
+        });
+  
+      onClose();
+    }
   };
 
   return (
@@ -39,8 +59,8 @@ const ReservationTable = () => {
         {reservations.map((reservation) => (
           <Tr key={reservation.id} bg={selectedReservation?.id === reservation.id ? "#6a4fa7" : "white"} color={selectedReservation?.id === reservation.id ? "white" : "black"}>
             <Td>{reservation.fecha}</Td>
-            <Td>{reservation.empleado.nombre}</Td>
-            <Td>{reservation.empleado.email}</Td>
+            <Td>{reservation.User.fullName}</Td>
+            <Td>{reservation.User.email}</Td>
             <Td>
               <Button colorScheme="red" onClick={() => handleDelete(reservation)}>
                 Eliminar
