@@ -46,29 +46,35 @@ const ReservationTable = () => {
   };
 
   return (
-    <Table variant="striped" colorScheme="gray">
-      <Thead>
-        <Tr>
-          <Th>Fecha</Th>
-          <Th>Empleado</Th>
-          <Th>Email</Th>
-          <Th>Acciones</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {reservations.map((reservation) => (
-          <Tr key={reservation.id} bg={selectedReservation?.id === reservation.id ? "#6a4fa7" : "white"} color={selectedReservation?.id === reservation.id ? "white" : "black"}>
-            <Td>{reservation.fecha}</Td>
-            <Td>{reservation.User.fullName}</Td>
-            <Td>{reservation.User.email}</Td>
-            <Td>
-              <Button colorScheme="red" onClick={() => handleDelete(reservation)}>
-                Eliminar
-              </Button>
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
+    <>
+      {reservations.length === 0 ? (
+        <Text>No hay reservas</Text>
+      ) : (
+        <Table variant="striped" colorScheme="gray">
+          <Thead>
+            <Tr>
+              <Th>Fecha</Th>
+              <Th>Empleado</Th>
+              <Th>Email</Th>
+              <Th>Acciones</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {reservations.map((reservation) => (
+              <Tr key={reservation.id} bg={selectedReservation?.id === reservation.id ? "#6a4fa7" : "white"} color={selectedReservation?.id === reservation.id ? "white" : "black"}>
+                <Td>{reservation.fecha}</Td>
+                <Td>{reservation.User.fullName}</Td>
+                <Td>{reservation.User.email}</Td>
+                <Td>
+                  <Button colorScheme="red" onClick={() => handleDelete(reservation)}>
+                    Eliminar
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -86,7 +92,7 @@ const ReservationTable = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Table>
+    </>
   );
 };
 
