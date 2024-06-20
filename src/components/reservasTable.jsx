@@ -14,10 +14,10 @@ import {
   ModalBody,
   ModalFooter,
   Text,
-  useDisclosure,
   Input,
   Flex,
   Spacer,
+  useDisclosure,
 } from '@chakra-ui/react';
 
 const ReservationTable = () => {
@@ -29,14 +29,22 @@ const ReservationTable = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('http://172.20.97.65:8080/api/reserva/all')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.message);
-        setReservations(data.message);
-      })
-      .catch((error) => console.error('Error fetching data:', error));
+    fetchReservations();
   }, []);
+
+  const fetchReservations = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/reserva/all');
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      setReservations(data.message);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Error al cargar las reservas.');
+    }
+  };
 
   const handleDelete = (reservation) => {
     setSelectedReservation(reservation);
@@ -45,7 +53,7 @@ const ReservationTable = () => {
 
   const handleConfirmDelete = () => {
     if (selectedReservation) {
-      fetch(`http://172.20.97.65:8080/api/reserva/${selectedReservation.id}`, {
+      fetch(`http://localhost:8080/api/reserva/${selectedReservation.id}`, {
         method: 'DELETE',
       })
         .then((response) => {
@@ -75,22 +83,67 @@ const ReservationTable = () => {
   };
 
   const handleFilter = () => {
-    if (!startDate || !endDate) {
-      setError('Por favor selecciona ambas fechas.');
-      return;
+    try {
+      // Validar que startDate y endDate no estén vacíos
+      if (!startDate || !endDate) {
+        setError('Por favor, selecciona las fechas de inicio y fin.');
+        return;
+      }
+
+      // Filtrar las reservas localmente
+      const filtered = reservations.filter((reservation) => {
+        const reservationDate = new Date(reservation.fecha);
+        return (
+          reservationDate >= new Date(startDate) &&
+          reservationDate <= new Date(endDate)
+        );
+      });
+
+      setReservations(filtered);
+    } catch (error) {
+      console.error('Error filtering reservas:', error);
+      setError('Error al filtrar las reservas.');
     }
+  };
 
-    // Validar que la fecha de fin sea mayor que la fecha de inicio
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+  const togglePresence = (reservation) => {
+    const updatedPresence = !reservation.presente;
 
-    if (start >= end) {
-      setError('La fecha de fin debe ser mayor que la fecha de inicio.');
-      return;
-    }
+    console.log('Enviando solicitud PUT con los siguientes datos:', {
+      presente: updatedPresence,
+    });
 
-    // Aquí puedes realizar la lógica de filtrado según las fechas seleccionadas
-    // Utiliza startDate y endDate para filtrar las reservas
+    fetch(`http://localhost:8080/api/reserva/${reservation.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ presente: updatedPresence }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log('Actualización exitosa:', data.message);
+          setReservations((prevReservations) =>
+            prevReservations.map((reserva) =>
+              reserva.id === reservation.id
+                ? { ...reserva, presente: updatedPresence }
+                : reserva
+            )
+          );
+        } else {
+          console.error(
+            'Error al intentar actualizar el estado de presencia:',
+            data.message
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(
+          'Error al intentar actualizar el estado de presencia:',
+          error
+        );
+      });
   };
 
   return (
@@ -122,29 +175,30 @@ const ReservationTable = () => {
             <Th>Fecha</Th>
             <Th>Empleado</Th>
             <Th>Email</Th>
+            <Th>Presencia del empleado</Th>
             <Th>Acciones</Th>
           </Tr>
         </Thead>
         <Tbody>
           {reservations.map((reservation) => (
-            <Tr
-              key={reservation.id}
-              bg={
-                selectedReservation?.id === reservation.id ? '#6a4fa7' : 'white'
-              }
-              color={
-                selectedReservation?.id === reservation.id ? 'white' : 'black'
-              }
-            >
+            <Tr key={reservation.id}>
               <Td>{reservation.fecha}</Td>
-              <Td>{reservation.User.fullName}</Td>
-              <Td>{reservation.User.email}</Td>
+              <Td>{reservation.User?.fullName || 'N/A'}</Td>
+              <Td>{reservation.User?.email || 'N/A'}</Td>
+              <Td>
+                <Button
+                  colorScheme={reservation.presente ? 'green' : 'orange'}
+                  onClick={() => togglePresence(reservation)}
+                >
+                  {reservation.presente ? 'Presente' : 'Ausente'}
+                </Button>
+              </Td>
               <Td>
                 <Button
                   colorScheme="red"
                   onClick={() => handleDelete(reservation)}
                 >
-                  Eliminar
+                  Cancelar
                 </Button>
               </Td>
             </Tr>
