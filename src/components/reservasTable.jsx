@@ -155,7 +155,7 @@ const ReservationTable = () => {
       presente: updatedPresence,
     });
 
-    fetch(`http://localhost:8080/api/reserva/${reservation.id}`, {
+    fetch(`http://localhost:8080/api/reserva/update/${reservation.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
