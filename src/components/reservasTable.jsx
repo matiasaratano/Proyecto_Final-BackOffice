@@ -17,16 +17,21 @@ import {
   Input,
   Flex,
   Spacer,
+  Textarea,
   useDisclosure,
 } from '@chakra-ui/react';
 
 const ReservationTable = () => {
   const [reservations, setReservations] = useState([]);
+  const [filteredReservations, setFilteredReservations] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isBulkDelete, setIsBulkDelete] = useState(false); // Nueva variable de estado para la eliminación masiva
   const [error, setError] = useState('');
+  const [step, setStep] = useState(1); // Estado para controlar las fases del modal
+  const [reason, setReason] = useState(''); // Estado para almacenar el motivo de la eliminación
 
   useEffect(() => {
     fetchReservations();
@@ -40,6 +45,7 @@ const ReservationTable = () => {
       }
       const data = await response.json();
       setReservations(data.message);
+      setFilteredReservations(data.message);
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Error al cargar las reservas.');
@@ -48,11 +54,14 @@ const ReservationTable = () => {
 
   const handleDelete = (reservation) => {
     setSelectedReservation(reservation);
+    setIsBulkDelete(false); // No es una eliminación masiva
     onOpen();
   };
 
   const handleConfirmDelete = () => {
-    if (selectedReservation) {
+    if (isBulkDelete) {
+      handleConfirmBulkDelete();
+    } else if (selectedReservation) {
       fetch(`http://localhost:8080/api/reserva/${selectedReservation.id}`, {
         method: 'DELETE',
       })
@@ -64,6 +73,11 @@ const ReservationTable = () => {
             // Actualizar la lista de reservas excluyendo la reserva eliminada
             setReservations((prevReservations) =>
               prevReservations.filter(
+                (reserva) => reserva.id !== selectedReservation.id
+              )
+            );
+            setFilteredReservations((prevFilteredReservations) =>
+              prevFilteredReservations.filter(
                 (reserva) => reserva.id !== selectedReservation.id
               )
             );
@@ -80,6 +94,34 @@ const ReservationTable = () => {
 
       onClose();
     }
+  };
+
+  const handleConfirmBulkDelete = async () => {
+    try {
+      for (const reservation of filteredReservations) {
+        await fetch(`http://localhost:8080/api/reserva/${reservation.id}`, {
+          method: 'DELETE',
+        });
+      }
+      // Actualizar la lista de reservas y reservas filtradas excluyendo las eliminadas
+      setReservations((prevReservations) =>
+        prevReservations.filter(
+          (reserva) =>
+            !filteredReservations.some((filtered) => filtered.id === reserva.id)
+        )
+      );
+      setFilteredReservations([]);
+    } catch (error) {
+      console.error('Error al intentar eliminar todas las reservas:', error);
+    } finally {
+      onClose();
+    }
+  };
+
+  const handleCancelAll = () => {
+    setIsBulkDelete(true); // Es una eliminación masiva
+    setStep(1); // Empezar en la primera fase del modal
+    onOpen();
   };
 
   const handleFilter = () => {
@@ -99,7 +141,7 @@ const ReservationTable = () => {
         );
       });
 
-      setReservations(filtered);
+      setFilteredReservations(filtered);
     } catch (error) {
       console.error('Error filtering reservas:', error);
       setError('Error al filtrar las reservas.');
@@ -131,6 +173,13 @@ const ReservationTable = () => {
                 : reserva
             )
           );
+          setFilteredReservations((prevFilteredReservations) =>
+            prevFilteredReservations.map((reserva) =>
+              reserva.id === reservation.id
+                ? { ...reserva, presente: updatedPresence }
+                : reserva
+            )
+          );
         } else {
           console.error(
             'Error al intentar actualizar el estado de presencia:',
@@ -144,6 +193,18 @@ const ReservationTable = () => {
           error
         );
       });
+  };
+
+  const handleAccept = () => {
+    if (step === 1) {
+      setStep(2);
+    } else {
+      handleConfirmDelete();
+    }
+  };
+
+  const handleReasonChange = (e) => {
+    setReason(e.target.value);
   };
 
   return (
@@ -167,6 +228,9 @@ const ReservationTable = () => {
           Filtrar
         </Button>
         <Spacer />
+        <Button colorScheme="red" onClick={handleCancelAll}>
+          Cancelar todas las reservas
+        </Button>
       </Flex>
       {error && <Text color="red">{error}</Text>}
       <Table variant="striped" colorScheme="gray">
@@ -180,7 +244,7 @@ const ReservationTable = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {reservations.map((reservation) => (
+          {filteredReservations.map((reservation) => (
             <Tr key={reservation.id}>
               <Td>{reservation.fecha}</Td>
               <Td>{reservation.User?.fullName || 'N/A'}</Td>
@@ -208,16 +272,31 @@ const ReservationTable = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Confirmación</ModalHeader>
+          <ModalHeader>
+            {step === 1 ? 'Motivo de la Cancelación' : 'Confirmación'}
+          </ModalHeader>
           <ModalBody>
-            <Text>¿Estás seguro/a de que quieres eliminar esta reserva?</Text>
+            {step === 1 ? (
+              <Textarea
+                value={reason}
+                onChange={handleReasonChange}
+                placeholder="Escriba el motivo"
+                size="sm"
+              />
+            ) : (
+              <Text>
+                {isBulkDelete
+                  ? '¿Estás seguro/a de que quieres eliminar todas las reservas?'
+                  : '¿Estás seguro/a de que quieres eliminar esta reserva?'}
+              </Text>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" onClick={onClose}>
               Cancelar
             </Button>
-            <Button colorScheme="red" onClick={handleConfirmDelete}>
-              Aceptar
+            <Button colorScheme="red" onClick={handleAccept}>
+              {step === 1 ? 'Siguiente' : 'Aceptar'}
             </Button>
           </ModalFooter>
         </ModalContent>
