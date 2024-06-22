@@ -1,19 +1,17 @@
 import React from 'react';
 import { Input, Text, Box } from '@chakra-ui/react';
 
-const AreaControlledInput = () => {
-  const [value, setValue] = React.useState('');
-  const handleChange = (event) => setValue(event.target.value);
-
+const AreaControlledInput = ({ name, value, onChange }) => {
   return (
     <Box w="100%">
       <Text mb="8px" textAlign="left" color={'#6a4fa7'} fontWeight={'bold'}>
-        Area:
+        Área:
       </Text>
       <Input
+        name={name}
         value={value}
-        onChange={handleChange}
-        placeholder="Ingrese su area de trabajo"
+        onChange={onChange}
+        placeholder="Ingrese su área de trabajo"
         size="md"
         focusBorderColor="#6750A4"
       />
