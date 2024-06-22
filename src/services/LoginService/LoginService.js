@@ -1,32 +1,40 @@
-const URL = "PEGA TU URL ACA";
+const URL = 'http://127.0.0.1:8080';
 
-const setLocalStorage = async (token) => {
-    await localStorage.setItem("token", token);
-    console.log("login service local storage", localStorage.getItem('token'));
+const setLocalStorage = (token) => {
+  localStorage.setItem('token', token);
+  console.log('login service local storage', localStorage.getItem('token'));
 };
 
 const loginService = (login) => {
-    const requestOptions = {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(login)
-    };
-    // Aquí se retorna la promesa de fetch
-    return fetch(`${URL}/api/user/login`, requestOptions)
-        .then(response => {
-            console.log("RESPUESTA: " + JSON.stringify(response));
-            if (!response.ok) {
-                throw new Error('La solicitud no fue exitosa, login');
-            }
-            return response.text();
-        })
-        .then(data => {
-            const newData = JSON.parse(data);
-            console.log("NewData", newData.data);
-            setLocalStorage(newData.data);
-            // Asegúrate de que newData.data tenga la propiedad 'success' o ajusta esta parte según la estructura de tus datos
-            return newData; // Aquí se retorna newData para que pueda ser usado después de que se resuelva la promesa
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(login),
+  };
+
+  return fetch(`${URL}/api/user/login`, requestOptions)
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((text) => {
+          throw new Error(text || 'La solicitud no fue exitosa, login');
         });
+      }
+      return response.json();
+    })
+    .then((newData) => {
+      if (newData.success && newData.data) {
+        setLocalStorage(newData.data);
+      } else {
+        throw new Error(
+          newData.message || 'Error en la respuesta del servidor'
+        );
+      }
+      return newData;
+    })
+    .catch((error) => {
+      console.error('Error en loginService:', error);
+      throw error; // Re-lanzar el error para que pueda ser manejado en el frontend
+    });
 };
 
 export default loginService;
