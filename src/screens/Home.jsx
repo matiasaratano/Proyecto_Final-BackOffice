@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   SimpleGrid,
@@ -19,9 +20,18 @@ import CerrarSesion from '../components/logoutButton';
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const navigate = useNavigate();
   const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
+
+  useEffect(() => {
+    console.log(localStorage.getItem("token"));
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    } else {
+      console.log("Token correcto: ", localStorage.getItem("token"));
+    }
+  }, [navigate]); // Incluir navigate en el array de dependencias
 
   const handleLogout = () => {
     // Redirecciono al usuario a la página de login
