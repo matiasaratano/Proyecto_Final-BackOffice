@@ -11,8 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import EmailControlledInput from '../components/emailControlledInput';
 import PasswordControlledInput from '../components/passwordControlledInput';
 import IngresarButton from '../components/ingresarButton';
-import RegistrarseButton from '../components/registrarseButton';
-// import OlvidastePasswordInput from '../components/olvidastePasswordInput';
+//import RegistrarseButton from '../components/registrarseButton';
 import loginService from '../services/LoginService/LoginService.js';
 import logo from '../assets/logobdt.png';
 import '../styles/styles.css';
@@ -51,21 +50,22 @@ const Login = () => {
       if (loginResponse.success) {
         navigate('/home');
       } else {
-        // Manejar el error de inicio de sesión aquí, por ejemplo, mostrando un mensaje al usuario
-        setErrors({ ...errors, general: loginResponse.message });
+        setErrors({
+          ...errors,
+          general: 'Error al iniciar sesión: Email o password incorrecta',
+        });
       }
     } catch (error) {
       console.error('Error de inicio de sesión: ', error);
-      setErrors({ ...errors, general: 'Email o password incorrecta' });
+      setErrors({
+        ...errors,
+        general: 'Error al iniciar sesión: Email o password incorrecta',
+      });
     }
   };
 
-  const handleRegistrarseClick = () => {
-    navigate('/registrar-usuario');
-  };
-
-  // const handleOlvidastePasswordClick = () => {
-  //   navigate('/contraseña-olvidada');
+  // const handleRegistrarseClick = () => {
+  //   navigate('/registrar-usuario');
   // };
 
   return (
@@ -85,10 +85,8 @@ const Login = () => {
         boxShadow="lg"
         mx="auto"
       >
-        {/* Logo de la empresa */}
         <Image src={logo} alt="bdt-global" className="logo" mb={1} />
 
-        {/* Campos de inicio de sesión */}
         <VStack spacing={4}>
           <Box w="100%">
             <FormControl isInvalid={errors.email}>
@@ -116,9 +114,8 @@ const Login = () => {
             </FormControl>
           </Box>
 
-          {/* Botones */}
           <IngresarButton onClick={handleSubmit} w="100%" />
-          <RegistrarseButton onClick={handleRegistrarseClick} w="100%" />
+          {/* <RegistrarseButton onClick={handleRegistrarseClick} w="100%" /> */}
         </VStack>
 
         {errors.general && (
@@ -126,10 +123,6 @@ const Login = () => {
             <Text color="red.500">{errors.general}</Text>
           </Box>
         )}
-
-        {/* <Box mt={4} textAlign="center">
-          <OlvidastePasswordInput onClick={handleOlvidastePasswordClick} />
-        </Box> */}
       </Box>
     </Box>
   );

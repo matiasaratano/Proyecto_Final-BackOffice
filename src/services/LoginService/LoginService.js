@@ -1,3 +1,5 @@
+import { jwtDecode } from 'jwt-decode';
+
 const URL = 'http://127.0.0.1:8080';
 
 const setLocalStorage = (token) => {
@@ -15,21 +17,25 @@ const loginService = (login) => {
   return fetch(`${URL}/api/user/login`, requestOptions)
     .then((response) => {
       if (!response.ok) {
-        return response.text().then((text) => {
-          throw new Error(text || 'La solicitud no fue exitosa, login');
+        return response.json().then((data) => {
+          throw new Error(data.message || 'La solicitud no fue exitosa, login');
         });
       }
       return response.json();
     })
     .then((newData) => {
+      console.log('Datos de respuesta de loginService:', newData);
       if (newData.success && newData.data) {
-        setLocalStorage(newData.data);
+        const decodedToken = jwtDecode(newData.data);
+        if (decodedToken.role === 'administrador') {
+          setLocalStorage(newData.data);
+          return { success: true };
+        } else {
+          throw new Error('No tiene permiso de administrador');
+        }
       } else {
-        throw new Error(
-          newData.message || 'Error en la respuesta del servidor'
-        );
+        throw new Error('Email o password incorrecta');
       }
-      return newData;
     })
     .catch((error) => {
       console.error('Error en loginService:', error);

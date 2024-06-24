@@ -12,6 +12,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
+  Select,
 } from '@chakra-ui/react';
 import {
   Modal,
@@ -36,8 +37,13 @@ const EmployeeTable = () => {
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [errors, setErrors] = useState({});
   const [employeeToSave, setEmployeeToSave] = useState(null);
+  const [editingRoleId, setEditingRoleId] = useState(null);
+  const [newRole, setNewRole] = useState(null); // Estado para el nuevo rol seleccionado
 
   const handleEdit = (id) => {
+    setEditingRoleId(id);
+    const employee = employees.find((emp) => emp.userId === id);
+    setNewRole(employee.role); // Inicializa el nuevo rol con el rol actual del empleado
     setEditingId(id);
   };
 
@@ -45,11 +51,9 @@ const EmployeeTable = () => {
     const newErrors = {};
     if (!employee.fullName)
       newErrors.fullName = 'El campo no puede estar vacío';
-    if (!employee.email) {
-      newErrors.email = 'El campo no puede estar vacío';
-    } else if (!/\S+@\S+\.\S+/.test(employee.email)) {
+    if (!employee.email) newErrors.email = 'El campo no puede estar vacío';
+    else if (!/\S+@\S+\.\S+/.test(employee.email))
       newErrors.email = 'El email no es válido';
-    }
     if (!employee.userPassword)
       newErrors.userPassword = 'El campo no puede estar vacío';
     return newErrors;
@@ -86,6 +90,9 @@ const EmployeeTable = () => {
   const handleChange = (e, id, field) => {
     const newEmployees = employees.map((employee) => {
       if (employee.userId === id) {
+        if (field === 'role') {
+          return { ...employee, role: e.target.value };
+        }
         return { ...employee, [field]: e.target.value };
       }
       return employee;
@@ -98,28 +105,47 @@ const EmployeeTable = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      setEmployeeToSave(employee);
+      setEmployeeToSave({
+        ...employeeToSave,
+        role: newRole, // Guarda el nuevo rol en el estado de empleado a guardar
+      });
       onSaveOpen();
     }
   };
 
   const confirmSave = () => {
     if (employeeToSave) {
-      fetch(`http://localhost:8080/api/user/${editingId}`, {
+      const employeeId = editingId || editingRoleId;
+      fetch(`http://localhost:8080/api/user/${employeeId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(employeeToSave),
+        body: JSON.stringify(employeeToSave), // Incluye el nuevo rol en la solicitud PUT
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Error al actualizar empleado');
+          }
+          return response.json();
+        })
         .then((data) => {
           console.log('Success:', data);
           setEditingId(null);
+          setEditingRoleId(null);
           setEmployeeToSave(null);
+          if (newRole !== null) {
+            const updatedEmployees = employees.map((employee) =>
+              employee.userId === employeeId
+                ? { ...employee, role: newRole } // Actualiza el rol en el estado local
+                : employee
+            );
+            setEmployees(updatedEmployees);
+          }
         })
         .catch((error) => {
-          console.error('Error:', error);
+          console.error('Error al actualizar empleado:', error);
+          // Puedes mostrar un mensaje de error al usuario aquí si es necesario
         });
     }
     onSaveClose();
@@ -149,6 +175,7 @@ const EmployeeTable = () => {
             <Th textAlign="left">Nombre Completo</Th>
             <Th textAlign="left">Email</Th>
             <Th textAlign="left">Password</Th>
+            <Th textAlign="left">Rol</Th>
             <Th textAlign="center">Acciones</Th>
           </Tr>
         </Thead>
@@ -157,7 +184,11 @@ const EmployeeTable = () => {
             <Tr key={employee.userId}>
               <Td textAlign="right">
                 <FormControl
-                  isInvalid={errors.fullName && editingId === employee.userId}
+                  isInvalid={
+                    errors.fullName &&
+                    (editingId === employee.userId ||
+                      editingRoleId === employee.userId)
+                  }
                 >
                   <Input
                     value={employee.fullName}
@@ -166,29 +197,39 @@ const EmployeeTable = () => {
                       handleChange(e, employee.userId, 'fullName')
                     }
                   />
-                  {errors.fullName && editingId === employee.userId && (
-                    <FormErrorMessage>{errors.fullName}</FormErrorMessage>
-                  )}
+                  {errors.fullName &&
+                    (editingId === employee.userId ||
+                      editingRoleId === employee.userId) && (
+                      <FormErrorMessage>{errors.fullName}</FormErrorMessage>
+                    )}
                 </FormControl>
               </Td>
               <Td textAlign="right">
                 <FormControl
-                  isInvalid={errors.email && editingId === employee.userId}
+                  isInvalid={
+                    errors.email &&
+                    (editingId === employee.userId ||
+                      editingRoleId === employee.userId)
+                  }
                 >
                   <Input
                     value={employee.email}
                     isDisabled={editingId !== employee.userId}
                     onChange={(e) => handleChange(e, employee.userId, 'email')}
                   />
-                  {errors.email && editingId === employee.userId && (
-                    <FormErrorMessage>{errors.email}</FormErrorMessage>
-                  )}
+                  {errors.email &&
+                    (editingId === employee.userId ||
+                      editingRoleId === employee.userId) && (
+                      <FormErrorMessage>{errors.email}</FormErrorMessage>
+                    )}
                 </FormControl>
               </Td>
               <Td textAlign="right">
                 <FormControl
                   isInvalid={
-                    errors.userPassword && editingId === employee.userId
+                    errors.userPassword &&
+                    (editingId === employee.userId ||
+                      editingRoleId === employee.userId)
                   }
                 >
                   <Input
@@ -199,10 +240,27 @@ const EmployeeTable = () => {
                       handleChange(e, employee.userId, 'userPassword')
                     }
                   />
-                  {errors.userPassword && editingId === employee.userId && (
-                    <FormErrorMessage>{errors.userPassword}</FormErrorMessage>
-                  )}
+                  {errors.userPassword &&
+                    (editingId === employee.userId ||
+                      editingRoleId === employee.userId) && (
+                      <FormErrorMessage>{errors.userPassword}</FormErrorMessage>
+                    )}
                 </FormControl>
+              </Td>
+              <Td textAlign="right">
+                {editingRoleId === employee.userId ? (
+                  <Select
+                    value={newRole || employee.role}
+                    onChange={(e) => setNewRole(e.target.value)}
+                  >
+                    <option value="administrador">Administrador</option>
+                    <option value="usuario">Usuario</option>
+                  </Select>
+                ) : employee.role ? (
+                  employee.role
+                ) : (
+                  'N/A'
+                )}
               </Td>
               <Td textAlign="right">
                 <Flex justifyContent="flex-end">

@@ -6,6 +6,7 @@ import {
   Text,
   FormControl,
   FormErrorMessage,
+  Select,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import EmailControlledInput from '../components/emailControlledInput';
@@ -28,6 +29,7 @@ const AltaEmpleado = () => {
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rol, setRol] = useState('');
   const [errors, setErrors] = useState({});
   const {
     isOpen: isConfirmationOpen,
@@ -55,6 +57,7 @@ const AltaEmpleado = () => {
       newErrors.email = 'El email no es válido';
     }
     if (!password) newErrors.password = 'El campo no puede estar vacío';
+    if (!rol) newErrors.rol = 'Debes seleccionar un rol';
     return newErrors;
   };
 
@@ -73,7 +76,7 @@ const AltaEmpleado = () => {
       fullName: nombreCompleto,
       email: email,
       userPassword: password,
-      role: 'usuario',
+      role: rol,
       bossId: null,
     };
 
@@ -152,6 +155,17 @@ const AltaEmpleado = () => {
             {errors.password && (
               <FormErrorMessage>{errors.password}</FormErrorMessage>
             )}
+          </FormControl>
+          <FormControl isInvalid={errors.rol}>
+            <Select
+              placeholder="Selecciona tipo de rol"
+              value={rol}
+              onChange={(e) => setRol(e.target.value)}
+            >
+              <option value="usuario">Usuario</option>
+              <option value="administrador">Administrador</option>
+            </Select>
+            {errors.rol && <FormErrorMessage>{errors.rol}</FormErrorMessage>}
           </FormControl>
           {errors.apiError && <Text color="red.500">{errors.apiError}</Text>}
           <AltaButton onClick={handleAltaClick} />
