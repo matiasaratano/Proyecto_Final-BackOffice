@@ -62,8 +62,12 @@ const ReservationTable = () => {
     if (isBulkDelete) {
       handleConfirmBulkDelete();
     } else if (selectedReservation) {
-      fetch(`http://localhost:8080/api/reserva/${selectedReservation.id}`, {
+      fetch(`http://localhost:8080/api/reserva/admin/${selectedReservation.id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reason }), // Incluir el motivo en el cuerpo de la solicitud
       })
         .then((response) => {
           if (response.ok) {
@@ -99,8 +103,12 @@ const ReservationTable = () => {
   const handleConfirmBulkDelete = async () => {
     try {
       for (const reservation of filteredReservations) {
-        await fetch(`http://localhost:8080/api/reserva/${reservation.id}`, {
+        await fetch(`http://localhost:8080/api/reserva/admin/${reservation.id}`, {
           method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json', // Necesario para enviar JSON en el cuerpo
+          },
+          body: JSON.stringify({ reason }), // Enviar el motivo en el cuerpo de la solicitud
         });
       }
       // Actualizar la lista de reservas y reservas filtradas excluyendo las eliminadas
