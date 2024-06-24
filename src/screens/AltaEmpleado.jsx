@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   VStack,
@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import ValidateTokenService from '../services/ValidationTokenService/ValidationTokenService.js';
 import EmailControlledInput from '../components/emailControlledInput';
 import PasswordControlledInput from '../components/passwordControlledInput';
 import NombreCompletoControlledInput from '../components/nombreCompletoControlledInput';
@@ -25,6 +26,7 @@ import {
 
 const AltaEmpleado = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,6 +83,7 @@ const AltaEmpleado = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Token': token,
       },
       body: JSON.stringify(newEmployee),
     })
@@ -106,6 +109,10 @@ const AltaEmpleado = () => {
     onResultClose();
     navigate('/home');
   };
+
+  useEffect(() => {
+    ValidateTokenService(navigate);
+  }, [navigate]);
 
   return (
     <Box

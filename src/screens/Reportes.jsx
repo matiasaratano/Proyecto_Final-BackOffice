@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Heading,
@@ -13,8 +13,12 @@ import {
   Td,
 } from '@chakra-ui/react';
 import BTMHeader from '../components/backToMenuHeader';
+import { useNavigate } from 'react-router-dom';
+import ValidateTokenService from '../services/ValidationTokenService/ValidationTokenService.js';
 
 const Reportes = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [mes, setMes] = useState('');
   const [anio, setAnio] = useState('');
   const [reporte, setReporte] = useState(null);
@@ -32,7 +36,11 @@ const Reportes = () => {
     if (mes && anio) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/report/${mes}/${anio}`
+          `http://localhost:8080/api/report/${mes}/${anio}`, {
+            headers: {
+              'Token': token
+            }
+          }
         );
         const data = await response.json();
 
@@ -51,6 +59,10 @@ const Reportes = () => {
       alert('Por favor selecciona mes y año.');
     }
   };
+
+  useEffect(() => {
+    ValidateTokenService(navigate);
+  }, [navigate]);
 
   return (
     <Box minH="100vh" bg="gray.50">

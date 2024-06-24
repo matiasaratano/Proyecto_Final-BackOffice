@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 
 const ReservationTable = () => {
+  const token = localStorage.getItem("token");
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
@@ -39,7 +40,12 @@ const ReservationTable = () => {
 
   const fetchReservations = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/reserva/all');
+      const response = await fetch('http://localhost:8080/api/reserva/all', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Token': token, 
+      },
+    });
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -66,6 +72,7 @@ const ReservationTable = () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Token': token,
         },
         body: JSON.stringify({ reason }), // Incluir el motivo en el cuerpo de la solicitud
       })
@@ -106,7 +113,8 @@ const ReservationTable = () => {
         await fetch(`http://localhost:8080/api/reserva/admin/${reservation.id}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json', // Necesario para enviar JSON en el cuerpo
+            'Content-Type': 'application/json',
+            'Token': token, 
           },
           body: JSON.stringify({ reason }), // Enviar el motivo en el cuerpo de la solicitud
         });
@@ -167,6 +175,7 @@ const ReservationTable = () => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Token': token,
       },
       body: JSON.stringify({ presente: updatedPresence }),
     })
