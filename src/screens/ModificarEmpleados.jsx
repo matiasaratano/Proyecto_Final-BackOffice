@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Heading } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import EmployeeTable from '../components/tablaEmpleados';
 import BTMHeader from '../components/backToMenuHeader'; 
+import ValidateTokenService from '../services/ValidationTokenService/ValidationTokenService.js';
+
 
 const ModificarEmpleado = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    ValidateTokenService(navigate);
+  }, [navigate]);
+
   return (
     <Box minH="100vh" bg="gray.100">
       <BTMHeader /> 

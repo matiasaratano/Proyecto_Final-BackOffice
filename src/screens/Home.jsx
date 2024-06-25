@@ -17,6 +17,7 @@ import ReservasCard from '../components/reservasCard';
 import ReportesCard from '../components/reportesCard';
 import Header from '../components/header';
 import CerrarSesion from '../components/logoutButton';
+import ValidateTokenService from '../services/ValidationTokenService/ValidationTokenService.js';
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,17 +26,12 @@ const Home = () => {
   const onOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    console.log(localStorage.getItem("token"));
-    if (!localStorage.getItem("token")) {
-      navigate("/login");
-    } else {
-      console.log("Token correcto: ", localStorage.getItem("token"));
-    }
-  }, [navigate]); // Incluir navigate en el array de dependencias
+    ValidateTokenService(navigate);
+  }, [navigate]);
 
   const handleLogout = () => {
-    // Redirecciono al usuario a la página de login
-    window.location.href = '/login';
+    localStorage.removeItem("token"); 
+    navigate('/login'); 
   };
 
   return (

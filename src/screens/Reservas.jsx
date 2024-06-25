@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Heading, Flex } from '@chakra-ui/react';
 import ReservationTable from '../components/reservasTable';
+import { useNavigate } from 'react-router-dom';
 import BTMHeader from '../components/backToMenuHeader';
+import ValidateTokenService from '../services/ValidationTokenService/ValidationTokenService.js';
 
 const Reservas = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    ValidateTokenService(navigate);
+  }, [navigate]);
+
   return (
     <Box minH="100vh" bg="gray.50">
       <BTMHeader />

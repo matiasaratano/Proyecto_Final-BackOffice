@@ -26,6 +26,7 @@ import {
 } from '@chakra-ui/react';
 
 const EmployeeTable = () => {
+  const token = localStorage.getItem('token');
   const [employees, setEmployees] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,6 +65,7 @@ const EmployeeTable = () => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'Token': token,
       },
     })
       .then((response) => {
@@ -120,6 +122,7 @@ const EmployeeTable = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Token': token,
         },
         body: JSON.stringify(employeeToSave), // Incluye el nuevo rol en la solicitud PUT
       })
@@ -152,14 +155,18 @@ const EmployeeTable = () => {
   };
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/user')
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success && data.data && data.data.success && data.data.data) {
-          setEmployees(data.data.data);
-        }
-      })
-      .catch((error) => console.error('Error fetching data:', error));
+    fetch('http://localhost:8080/api/user', {
+      headers: {
+        'Token': token
+      }
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success && data.data && data.data.success && data.data.data) {
+        setEmployees(data.data.data);
+      }
+    })
+    .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
   const openDeleteModal = (id) => {
