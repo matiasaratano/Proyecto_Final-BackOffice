@@ -22,30 +22,30 @@ import {
 } from '@chakra-ui/react';
 
 const ReservationTable = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isBulkDelete, setIsBulkDelete] = useState(false); // Nueva variable de estado para la eliminación masiva
+  const [isBulkDelete, setIsBulkDelete] = useState(false);
   const [error, setError] = useState('');
-  const [step, setStep] = useState(1); // Estado para controlar las fases del modal
-  const [reason, setReason] = useState(''); // Estado para almacenar el motivo de la eliminación
+  const [reason, setReason] = useState('');
 
   useEffect(() => {
     fetchReservations();
+    // eslint-disable-next-line
   }, []);
 
   const fetchReservations = async () => {
     try {
       const response = await fetch('http://localhost:8080/api/reserva/all', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Token': token, 
-      },
-    });
+        headers: {
+          'Content-Type': 'application/json',
+          Token: token,
+        },
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -60,28 +60,27 @@ const ReservationTable = () => {
 
   const handleDelete = (reservation) => {
     setSelectedReservation(reservation);
-    setIsBulkDelete(false); // No es una eliminación masiva
+    setIsBulkDelete(false);
     onOpen();
   };
 
   const handleConfirmDelete = () => {
-    if (isBulkDelete) {
-      handleConfirmBulkDelete();
-    } else if (selectedReservation) {
-      fetch(`http://localhost:8080/api/reserva/admin/${selectedReservation.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Token': token,
-        },
-        body: JSON.stringify({ reason }), // Incluir el motivo en el cuerpo de la solicitud
-      })
+    if (selectedReservation) {
+      fetch(
+        `http://localhost:8080/api/reserva/admin/${selectedReservation.id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Token: token,
+          },
+        }
+      )
         .then((response) => {
           if (response.ok) {
             console.log(
               `Reserva con ID ${selectedReservation.id} eliminada correctamente`
             );
-            // Actualizar la lista de reservas excluyendo la reserva eliminada
             setReservations((prevReservations) =>
               prevReservations.filter(
                 (reserva) => reserva.id !== selectedReservation.id
@@ -110,16 +109,18 @@ const ReservationTable = () => {
   const handleConfirmBulkDelete = async () => {
     try {
       for (const reservation of filteredReservations) {
-        await fetch(`http://localhost:8080/api/reserva/admin/${reservation.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Token': token, 
-          },
-          body: JSON.stringify({ reason }), // Enviar el motivo en el cuerpo de la solicitud
-        });
+        await fetch(
+          `http://localhost:8080/api/reserva/admin/${reservation.id}`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Token: token,
+            },
+            body: JSON.stringify({ reason }),
+          }
+        );
       }
-      // Actualizar la lista de reservas y reservas filtradas excluyendo las eliminadas
       setReservations((prevReservations) =>
         prevReservations.filter(
           (reserva) =>
@@ -135,20 +136,18 @@ const ReservationTable = () => {
   };
 
   const handleCancelAll = () => {
-    setIsBulkDelete(true); // Es una eliminación masiva
-    setStep(1); // Empezar en la primera fase del modal
+    setIsBulkDelete(true);
+    setReason('');
     onOpen();
   };
 
   const handleFilter = () => {
     try {
-      // Validar que startDate y endDate no estén vacíos
       if (!startDate || !endDate) {
         setError('Por favor, selecciona las fechas de inicio y fin.');
         return;
       }
 
-      // Filtrar las reservas localmente
       const filtered = reservations.filter((reservation) => {
         const reservationDate = new Date(reservation.fecha);
         return (
@@ -167,22 +166,17 @@ const ReservationTable = () => {
   const togglePresence = (reservation) => {
     const updatedPresence = !reservation.presente;
 
-    console.log('Enviando solicitud PUT con los siguientes datos:', {
-      presente: updatedPresence,
-    });
-
     fetch(`http://localhost:8080/api/reserva/update/${reservation.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Token': token,
+        Token: token,
       },
       body: JSON.stringify({ presente: updatedPresence }),
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          console.log('Actualización exitosa:', data.message);
           setReservations((prevReservations) =>
             prevReservations.map((reserva) =>
               reserva.id === reservation.id
@@ -213,8 +207,8 @@ const ReservationTable = () => {
   };
 
   const handleAccept = () => {
-    if (step === 1) {
-      setStep(2);
+    if (isBulkDelete) {
+      handleConfirmBulkDelete();
     } else {
       handleConfirmDelete();
     }
@@ -290,10 +284,10 @@ const ReservationTable = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {step === 1 ? 'Motivo de la Cancelación' : 'Confirmación'}
+            {isBulkDelete ? 'Motivo de la Cancelación' : 'Confirmación'}
           </ModalHeader>
           <ModalBody>
-            {step === 1 ? (
+            {isBulkDelete ? (
               <Textarea
                 value={reason}
                 onChange={handleReasonChange}
@@ -301,11 +295,7 @@ const ReservationTable = () => {
                 size="sm"
               />
             ) : (
-              <Text>
-                {isBulkDelete
-                  ? '¿Estás seguro/a de que quieres eliminar todas las reservas?'
-                  : '¿Estás seguro/a de que quieres eliminar esta reserva?'}
-              </Text>
+              <Text>¿Estás seguro/a de que quieres eliminar esta reserva?</Text>
             )}
           </ModalBody>
           <ModalFooter>
@@ -313,7 +303,7 @@ const ReservationTable = () => {
               Cancelar
             </Button>
             <Button colorScheme="red" onClick={handleAccept}>
-              {step === 1 ? 'Siguiente' : 'Aceptar'}
+              {isBulkDelete ? 'Aceptar' : 'Confirmar'}
             </Button>
           </ModalFooter>
         </ModalContent>

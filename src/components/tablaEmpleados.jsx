@@ -37,15 +37,14 @@ const EmployeeTable = () => {
   } = useDisclosure();
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [errors, setErrors] = useState({});
-  const [employeeToSave, setEmployeeToSave] = useState(null);
-  const [editingRoleId, setEditingRoleId] = useState(null);
-  const [newRole, setNewRole] = useState(null); // Estado para el nuevo rol seleccionado
+  const [employeeToSave, setEmployeeToSave] = useState({});
+  const [newRole, setNewRole] = useState(null);
 
   const handleEdit = (id) => {
-    setEditingRoleId(id);
-    const employee = employees.find((emp) => emp.userId === id);
-    setNewRole(employee.role); // Inicializa el nuevo rol con el rol actual del empleado
     setEditingId(id);
+    const employee = employees.find((emp) => emp.userId === id);
+    setEmployeeToSave(employee);
+    setNewRole(employee.role);
   };
 
   const validateFields = (employee) => {
@@ -65,7 +64,7 @@ const EmployeeTable = () => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Token': token,
+        Token: token,
       },
     })
       .then((response) => {
@@ -92,10 +91,11 @@ const EmployeeTable = () => {
   const handleChange = (e, id, field) => {
     const newEmployees = employees.map((employee) => {
       if (employee.userId === id) {
-        if (field === 'role') {
-          return { ...employee, role: e.target.value };
+        const updatedEmployee = { ...employee, [field]: e.target.value };
+        if (id === editingId) {
+          setEmployeeToSave(updatedEmployee);
         }
-        return { ...employee, [field]: e.target.value };
+        return updatedEmployee;
       }
       return employee;
     });
@@ -103,13 +103,13 @@ const EmployeeTable = () => {
   };
 
   const handleSaveClick = (employee) => {
-    const newErrors = validateFields(employee);
+    const newErrors = validateFields(employeeToSave);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
       setEmployeeToSave({
         ...employeeToSave,
-        role: newRole, // Guarda el nuevo rol en el estado de empleado a guardar
+        role: newRole,
       });
       onSaveOpen();
     }
@@ -117,14 +117,13 @@ const EmployeeTable = () => {
 
   const confirmSave = () => {
     if (employeeToSave) {
-      const employeeId = editingId || editingRoleId;
-      fetch(`http://localhost:8080/api/user/${employeeId}`, {
+      fetch(`http://localhost:8080/api/user/${editingId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Token': token,
+          Token: token,
         },
-        body: JSON.stringify(employeeToSave), // Incluye el nuevo rol en la solicitud PUT
+        body: JSON.stringify(employeeToSave),
       })
         .then((response) => {
           if (!response.ok) {
@@ -135,20 +134,15 @@ const EmployeeTable = () => {
         .then((data) => {
           console.log('Success:', data);
           setEditingId(null);
-          setEditingRoleId(null);
-          setEmployeeToSave(null);
-          if (newRole !== null) {
-            const updatedEmployees = employees.map((employee) =>
-              employee.userId === employeeId
-                ? { ...employee, role: newRole } // Actualiza el rol en el estado local
-                : employee
-            );
-            setEmployees(updatedEmployees);
-          }
+          setEmployeeToSave({});
+          setEmployees(
+            employees.map((employee) =>
+              employee.userId === editingId ? { ...data.data } : employee
+            )
+          );
         })
         .catch((error) => {
           console.error('Error al actualizar empleado:', error);
-          // Puedes mostrar un mensaje de error al usuario aquí si es necesario
         });
     }
     onSaveClose();
@@ -157,17 +151,17 @@ const EmployeeTable = () => {
   useEffect(() => {
     fetch('http://localhost:8080/api/user', {
       headers: {
-        'Token': token
-      }
+        Token: token,
+      },
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success && data.data && data.data.success && data.data.data) {
-        setEmployees(data.data.data);
-      }
-    })
-    .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success && data.data && data.data.success && data.data.data) {
+          setEmployees(data.data.data);
+        }
+      })
+      .catch((error) => console.error('Error fetching data:', error));
+  }, [token]);
 
   const openDeleteModal = (id) => {
     setEmployeeToDelete(id);
@@ -191,11 +185,7 @@ const EmployeeTable = () => {
             <Tr key={employee.userId}>
               <Td textAlign="right">
                 <FormControl
-                  isInvalid={
-                    errors.fullName &&
-                    (editingId === employee.userId ||
-                      editingRoleId === employee.userId)
-                  }
+                  isInvalid={errors.fullName && editingId === employee.userId}
                 >
                   <Input
                     value={employee.fullName}
@@ -204,39 +194,29 @@ const EmployeeTable = () => {
                       handleChange(e, employee.userId, 'fullName')
                     }
                   />
-                  {errors.fullName &&
-                    (editingId === employee.userId ||
-                      editingRoleId === employee.userId) && (
-                      <FormErrorMessage>{errors.fullName}</FormErrorMessage>
-                    )}
+                  {errors.fullName && editingId === employee.userId && (
+                    <FormErrorMessage>{errors.fullName}</FormErrorMessage>
+                  )}
                 </FormControl>
               </Td>
               <Td textAlign="right">
                 <FormControl
-                  isInvalid={
-                    errors.email &&
-                    (editingId === employee.userId ||
-                      editingRoleId === employee.userId)
-                  }
+                  isInvalid={errors.email && editingId === employee.userId}
                 >
                   <Input
                     value={employee.email}
                     isDisabled={editingId !== employee.userId}
                     onChange={(e) => handleChange(e, employee.userId, 'email')}
                   />
-                  {errors.email &&
-                    (editingId === employee.userId ||
-                      editingRoleId === employee.userId) && (
-                      <FormErrorMessage>{errors.email}</FormErrorMessage>
-                    )}
+                  {errors.email && editingId === employee.userId && (
+                    <FormErrorMessage>{errors.email}</FormErrorMessage>
+                  )}
                 </FormControl>
               </Td>
               <Td textAlign="right">
                 <FormControl
                   isInvalid={
-                    errors.userPassword &&
-                    (editingId === employee.userId ||
-                      editingRoleId === employee.userId)
+                    errors.userPassword && editingId === employee.userId
                   }
                 >
                   <Input
@@ -247,15 +227,13 @@ const EmployeeTable = () => {
                       handleChange(e, employee.userId, 'userPassword')
                     }
                   />
-                  {errors.userPassword &&
-                    (editingId === employee.userId ||
-                      editingRoleId === employee.userId) && (
-                      <FormErrorMessage>{errors.userPassword}</FormErrorMessage>
-                    )}
+                  {errors.userPassword && editingId === employee.userId && (
+                    <FormErrorMessage>{errors.userPassword}</FormErrorMessage>
+                  )}
                 </FormControl>
               </Td>
               <Td textAlign="right">
-                {editingRoleId === employee.userId ? (
+                {editingId === employee.userId ? (
                   <Select
                     value={newRole || employee.role}
                     onChange={(e) => setNewRole(e.target.value)}

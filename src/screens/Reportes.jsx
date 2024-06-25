@@ -11,6 +11,7 @@ import {
   Tr,
   Th,
   Td,
+  Text,
 } from '@chakra-ui/react';
 import BTMHeader from '../components/backToMenuHeader';
 import { useNavigate } from 'react-router-dom';
@@ -18,28 +19,32 @@ import ValidateTokenService from '../services/ValidationTokenService/ValidationT
 
 const Reportes = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   const [mes, setMes] = useState('');
   const [anio, setAnio] = useState('');
   const [reporte, setReporte] = useState(null);
   const [error, setError] = useState(null);
+  const [validationError, setValidationError] = useState('');
 
   const handleMesChange = (event) => {
     setMes(event.target.value);
+    setValidationError(''); // Clear validation error on change
   };
 
   const handleAnioChange = (event) => {
     setAnio(event.target.value);
+    setValidationError(''); // Clear validation error on change
   };
 
   const generarReporte = async () => {
     if (mes && anio) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/report/${mes}/${anio}`, {
+          `http://localhost:8080/api/report/${mes}/${anio}`,
+          {
             headers: {
-              'Token': token
-            }
+              Token: token,
+            },
           }
         );
         const data = await response.json();
@@ -56,7 +61,7 @@ const Reportes = () => {
         setReporte(null);
       }
     } else {
-      alert('Por favor selecciona mes y año.');
+      setValidationError('Por favor selecciona mes y año.');
     }
   };
 
@@ -111,6 +116,7 @@ const Reportes = () => {
           </Button>
         </Flex>
 
+        {validationError && <Text color="red">{validationError}</Text>}
         {error && <Box color="red">{error}</Box>}
 
         {reporte && (
