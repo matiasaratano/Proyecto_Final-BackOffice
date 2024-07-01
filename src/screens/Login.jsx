@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import EmailControlledInput from '../components/emailControlledInput';
 import PasswordControlledInput from '../components/passwordControlledInput';
 import IngresarButton from '../components/ingresarButton';
-//import RegistrarseButton from '../components/registrarseButton';
 import loginService from '../services/LoginService/LoginService.js';
 import logo from '../assets/logobdt.png';
 import '../styles/styles.css';
@@ -36,7 +35,7 @@ const Login = () => {
       ...prevProps,
       [event.target.name]: event.target.value,
     }));
-    setErrors({ ...errors, general: '' }); // Clear general error message on input change
+    setErrors({ ...errors, general: '' });
   };
 
   const handleSubmit = async (event) => {
@@ -63,10 +62,6 @@ const Login = () => {
       });
     }
   };
-
-  // const handleRegistrarseClick = () => {
-  //   navigate('/registrar-usuario');
-  // };
 
   return (
     <Box
@@ -115,7 +110,6 @@ const Login = () => {
           </Box>
 
           <IngresarButton onClick={handleSubmit} w="100%" />
-          {/* <RegistrarseButton onClick={handleRegistrarseClick} w="100%" /> */}
         </VStack>
 
         {errors.general && (

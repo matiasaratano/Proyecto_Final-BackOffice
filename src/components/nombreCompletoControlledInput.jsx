@@ -13,7 +13,7 @@ const NombreCompletoControlledInput = ({ name, value, onChange }) => {
         onChange={onChange}
         placeholder="Ingrese su nombre completo"
         size="md"
-        type="text" // Especificar el tipo es opcional aquí ya que 'text' es el valor predeterminado
+        type="text"
         focusBorderColor="#6750A4"
       />
     </Box>

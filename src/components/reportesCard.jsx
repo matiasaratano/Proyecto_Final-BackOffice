@@ -32,9 +32,9 @@ const ReportesCard = () => {
         src="https://img.freepik.com/foto-gratis/concepto-estrategia-estadisticas-informe-informacion-datos_53876-124952.jpg?t=st=1718479503~exp=1718483103~hmac=1f079eff3fb31c5cd14dbf257d22e333aa517f44c65fea5e1e16e07d3373183d&w=996"
         alt="Reportes"
         borderRadius="lg"
-        height="255px" // Tamaño consistente
-        width="100%" // Para asegurarse de que ocupe todo el ancho
-        objectFit="cover" // Para que la imagen se recorte y no se distorsione
+        height="255px"
+        width="100%"
+        objectFit="cover"
       />
       <CardBody>
         <Stack mt="6" spacing="3">

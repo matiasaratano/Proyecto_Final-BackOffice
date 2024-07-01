@@ -28,12 +28,12 @@ const Reportes = () => {
 
   const handleMesChange = (event) => {
     setMes(event.target.value);
-    setValidationError(''); // Clear validation error on change
+    setValidationError('');
   };
 
   const handleAnioChange = (event) => {
     setAnio(event.target.value);
-    setValidationError(''); // Clear validation error on change
+    setValidationError('');
   };
 
   const generarReporte = async () => {
