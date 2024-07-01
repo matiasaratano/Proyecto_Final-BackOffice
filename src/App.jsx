@@ -17,7 +17,6 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            {/* Rutas para las diferentes pantallas */}
             <Route path="/login" element={<Login />} />
             <Route path="/home" element={<Home />} />
             <Route path="/registrar-usuario" element={<RegistrarUsuario />} />

@@ -6,8 +6,8 @@ El backoffice para el proyecto Gestión de Presencialidad permite la gestión de
 
 ## Características Principales
 
-- Gestión de usuarios.
-- Gestión de reservas.
+- Gestión de usuarios (alta de nuevos usuarios y modificación/eliminación de los existentes).
+- Gestión de reservas (cancelación de reservas).
 - Acceso al documento de viandas.
 - Generación de reportes.
 
@@ -36,7 +36,7 @@ Estas instrucciones son para desarrolladores que deseen clonar y ejecutar el pro
 
 ### Ejecución del Proyecto en Desarrollo
 
-- Usando npm: npm npm start
+- Usando npm: npm start
 - O usando yarn: yarn start
 
 El proyecto se ejecutará en http://localhost:3000.
@@ -54,7 +54,7 @@ Los usuarios finales pueden acceder al backoffice a través de su navegador pref
 
 ## Estructura del Proyecto
 
-Una breve descripción de la estructura de carpetas y archivos principales:
+Una breve descripción de la estructura de carpetas y archivos principales (se desarrolla en profundidad en los manuales):
 
 - public/ # Archivos públicos
 - src/ # Código fuente del proyecto

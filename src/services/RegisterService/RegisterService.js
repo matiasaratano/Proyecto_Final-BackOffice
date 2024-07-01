@@ -6,7 +6,7 @@ const registerService = (register) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(register),
   };
-  // Aquí se retorna la promesa de fetch
+  // Se retorna la promesa de fetch
   return fetch(`${URL}/api/user/`, requestOptions)
     .then((response) => {
       console.log('RESPUESTA: ' + JSON.stringify(response));
